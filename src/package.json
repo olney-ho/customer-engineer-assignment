@@ -1,0 +1,11 @@
+{
+  "name": "spencer-williams-search",
+  "version": "1.0.0",
+  "description": "Algolia indexing script and search demo for Spencer and Williams",
+  "scripts": {
+    "index": "node index.js"
+  },
+  "dependencies": {
+    "algoliasearch": "^5.50.0"
+  }
+}

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spencer &amp; Williams | Product Search</title>
+
+  <!-- InstantSearch CSS (Satellite theme) -->
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/instantsearch.css@8.12.0/themes/satellite-min.css"
+    integrity="sha256-B5+XFol6zUm+Dr5+VAcHUcocgKao4udA1P52xYreuJM="
+    crossorigin="anonymous">
+
+  <style>
+    /* ------------------------------------------------------------------ */
+    /*  Base                                                               */
+    /* ------------------------------------------------------------------ */
+    *,
+    *::before,
+    *::after { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+      color: #21243d;
+      background: #f5f5fa;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Header                                                             */
+    /* ------------------------------------------------------------------ */
+    .header {
+      background: #5468ff;
+      padding: 1.2rem 2rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .header .ais-SearchBox {
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .header .ais-SearchBox-form {
+      display: flex;
+    }
+
+    .header .ais-SearchBox-input {
+      border: none;
+      border-radius: 6px;
+      padding: 0.6rem 1rem 0.6rem 2.2rem;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    .header .ais-SearchBox-submit {
+      position: absolute;
+      left: 0.6rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .header .ais-SearchBox-submit svg {
+      width: 14px;
+      height: 14px;
+      fill: #999;
+    }
+
+    .header .ais-SearchBox-reset {
+      position: absolute;
+      right: 0.6rem;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Layout                                                             */
+    /* ------------------------------------------------------------------ */
+    .container {
+      display: flex;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      gap: 2rem;
+    }
+
+    .sidebar {
+      flex: 0 0 260px;
+    }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Sidebar filters                                                    */
+    /* ------------------------------------------------------------------ */
+    .filter-section {
+      margin-bottom: 1.8rem;
+    }
+
+    .filter-section h3 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #888;
+      margin: 0 0 0.6rem;
+    }
+
+    .ais-RefinementList-item,
+    .ais-RatingMenu-item,
+    .ais-ToggleRefinement-label {
+      font-size: 0.9rem;
+    }
+
+    .ais-RefinementList-count,
+    .ais-RatingMenu-count {
+      font-size: 0.78rem;
+      color: #999;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Stats & sort bar                                                   */
+    /* ------------------------------------------------------------------ */
+    .results-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .ais-Stats-text {
+      font-size: 0.85rem;
+      color: #888;
+    }
+
+    .ais-SortBy-select {
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      font-size: 0.85rem;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Hits grid                                                          */
+    /* ------------------------------------------------------------------ */
+    .ais-Hits-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.2rem;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .ais-Hits-item {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.2s;
+    }
+
+    .ais-Hits-item:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .hit-image {
+      width: 100%;
+      height: 180px;
+      object-fit: contain;
+      margin-bottom: 0.8rem;
+    }
+
+    .hit-brand {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #5468ff;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+    }
+
+    .hit-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
+    }
+
+    .hit-name mark {
+      background: #ffeaa7;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+
+    .hit-description {
+      font-size: 0.8rem;
+      color: #666;
+      line-height: 1.4;
+      margin-bottom: 0.6rem;
+      flex: 1;
+    }
+
+    .hit-description mark {
+      background: #ffeaa7;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+
+    .hit-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: auto;
+      padding-top: 0.5rem;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .hit-price {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #21243d;
+    }
+
+    .hit-rating {
+      font-size: 0.8rem;
+      color: #f5a623;
+    }
+
+    .hit-shipping {
+      font-size: 0.7rem;
+      color: #27ae60;
+      font-weight: 600;
+      margin-top: 0.3rem;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Pagination                                                         */
+    /* ------------------------------------------------------------------ */
+    #pagination {
+      display: flex;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Empty / error                                                      */
+    /* ------------------------------------------------------------------ */
+    .ais-Hits--empty {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #888;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Current refinements                                                */
+    /* ------------------------------------------------------------------ */
+    .ais-CurrentRefinements {
+      margin-bottom: 1rem;
+    }
+
+    .ais-CurrentRefinements-item {
+      font-size: 0.85rem;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Range slider                                                       */
+    /* ------------------------------------------------------------------ */
+    .ais-RangeSlider {
+      padding: 0 0.5rem;
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Responsive                                                         */
+    /* ------------------------------------------------------------------ */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+      }
+      .sidebar {
+        flex: none;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================================================================== -->
+  <!--  Header with search box                                             -->
+  <!-- ================================================================== -->
+  <header class="header">
+    <h1>Spencer &amp; Williams</h1>
+    <div id="searchbox"></div>
+  </header>
+
+  <!-- ================================================================== -->
+  <!--  Main layout                                                        -->
+  <!-- ================================================================== -->
+  <div class="container">
+
+    <!-- Sidebar -------------------------------------------------------- -->
+    <aside class="sidebar">
+      <div class="filter-section">
+        <h3>Category</h3>
+        <div id="categories"></div>
+      </div>
+
+      <div class="filter-section">
+        <h3>Brand</h3>
+        <div id="brands"></div>
+      </div>
+
+      <div class="filter-section">
+        <h3>Price Range</h3>
+        <div id="price-range"></div>
+      </div>
+
+      <div class="filter-section">
+        <h3>Rating</h3>
+        <div id="rating"></div>
+      </div>
+
+      <div class="filter-section">
+        <h3>Free Shipping</h3>
+        <div id="free-shipping"></div>
+      </div>
+    </aside>
+
+    <!-- Results -------------------------------------------------------- -->
+    <main class="main">
+      <div class="results-bar">
+        <div id="stats"></div>
+        <div id="sort-by"></div>
+      </div>
+      <div id="current-refinements"></div>
+      <div id="hits"></div>
+      <div id="pagination"></div>
+    </main>
+
+  </div>
+
+  <!-- ================================================================== -->
+  <!--  Scripts                                                            -->
+  <!-- ================================================================== -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/algoliasearch@5.50.0/dist/lite/builds/browser.umd.js"
+    integrity="sha256-8RYIcMqSc1ccr23TZwtyGdVwlJVzkQ5EgIhg3e2llgw="
+    crossorigin="anonymous"></script>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/instantsearch.js@4.92.1/dist/instantsearch.production.min.js"
+    integrity="sha256-YYw1BsluQJLwQUxttyuzn5gV4n+dvnEOJrFniC6MjgA="
+    crossorigin="anonymous"></script>
+
+  <script>
+    // ------------------------------------------------------------------
+    //  CONFIGURATION - Replace these with your own credentials
+    // ------------------------------------------------------------------
+    const APP_ID     = '4C39TV0C67';
+    const SEARCH_KEY = 'e34abc6455a22347bbdab46b6f2a35db';
+    const INDEX_NAME = 'products';
+
+    // ------------------------------------------------------------------
+    //  Initialise InstantSearch
+    // ------------------------------------------------------------------
+    const { liteClient: algoliasearch } = window['algoliasearch/lite'];
+    const searchClient = algoliasearch(APP_ID, SEARCH_KEY);
+
+    const search = instantsearch({
+      indexName: INDEX_NAME,
+      searchClient,
+      insights: true,
+    });
+
+    // ------------------------------------------------------------------
+    //  Helper: render star icons
+    // ------------------------------------------------------------------
+    function renderStars(rating) {
+      const full  = Math.max(0, Math.min(5, Math.round(rating || 0)));
+      const empty = 5 - full;
+      return '\u2605'.repeat(full) + '\u2606'.repeat(empty);
+    }
+
+    // ------------------------------------------------------------------
+    //  Widgets
+    // ------------------------------------------------------------------
+    search.addWidgets([
+
+      // Search box
+      instantsearch.widgets.searchBox({
+        container: '#searchbox',
+        placeholder: 'Search products...',
+        showReset: true,
+        showSubmit: true,
+        cssClasses: { root: 'ais-SearchBox' }
+      }),
+
+      // Hits
+      instantsearch.widgets.hits({
+        container: '#hits',
+        templates: {
+          item(hit, { html, components }) {
+            return html`
+              <article>
+                <img class="hit-image" src="${hit.image}" alt="${hit.name}" loading="lazy" />
+                <div class="hit-brand">${hit.brand || ''}</div>
+                <div class="hit-name">
+                  ${components.Highlight({ attribute: 'name', hit })}
+                </div>
+                <div class="hit-description">
+                  ${components.Snippet({ attribute: 'description', hit })}
+                </div>
+                <div class="hit-footer">
+                  <span class="hit-price">$${Number(hit.price).toFixed(2)}</span>
+                  <span class="hit-rating">${renderStars(hit.rating)}</span>
+                </div>
+                ${hit.free_shipping
+                  ? html`<div class="hit-shipping">Free Shipping</div>`
+                  : ''}
+              </article>
+            `;
+          },
+          empty(results, { html }) {
+            return html`
+              <div class="ais-Hits--empty">
+                <p>No results found for <strong>"${results.query}"</strong>.</p>
+                <p>Try adjusting your search or filters.</p>
+              </div>
+            `;
+          }
+        }
+      }),
+
+      // Category filter
+      instantsearch.widgets.refinementList({
+        container: '#categories',
+        attribute: 'categories',
+        limit: 8,
+        showMore: true,
+        showMoreLimit: 20,
+        searchable: true,
+        searchablePlaceholder: 'Search categories...',
+      }),
+
+      // Brand filter
+      instantsearch.widgets.refinementList({
+        container: '#brands',
+        attribute: 'brand',
+        limit: 8,
+        showMore: true,
+        showMoreLimit: 20,
+        searchable: true,
+        searchablePlaceholder: 'Search brands...',
+      }),
+
+      // Price range filter
+      instantsearch.widgets.refinementList({
+        container: '#price-range',
+        attribute: 'price_range',
+        sortBy: ['name:asc'],
+      }),
+
+      // Rating filter
+      instantsearch.widgets.ratingMenu({
+        container: '#rating',
+        attribute: 'rating',
+      }),
+
+      // Free shipping toggle
+      instantsearch.widgets.toggleRefinement({
+        container: '#free-shipping',
+        attribute: 'free_shipping',
+        templates: {
+          labelText() { return 'Free shipping only'; }
+        }
+      }),
+
+      // Stats
+      instantsearch.widgets.stats({
+        container: '#stats',
+      }),
+
+      // Sort by
+      instantsearch.widgets.sortBy({
+        container: '#sort-by',
+        items: [
+          { label: 'Most Relevant', value: INDEX_NAME },
+          { label: 'Price (Low to High)', value: INDEX_NAME + '_price_asc' },
+          { label: 'Price (High to Low)', value: INDEX_NAME + '_price_desc' },
+        ],
+      }),
+
+      // Current active filters
+      instantsearch.widgets.currentRefinements({
+        container: '#current-refinements',
+      }),
+
+      // Pagination
+      instantsearch.widgets.pagination({
+        container: '#pagination',
+        padding: 2,
+      }),
+
+      // Configure default parameters
+      instantsearch.widgets.configure({
+        hitsPerPage: 16,
+      }),
+
+    ]);
+
+    search.start();
+  </script>
+
+</body>
+</html>
